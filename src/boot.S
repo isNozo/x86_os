@@ -17,12 +17,24 @@ ipl:
 	sti
 
 	mov	[BOOT.DRIVE], dl
+
+	push	word 'A'
+	call	putc
+	add	sp, 2
+	push	word 'B'
+	call	putc
+	add	sp, 2
+	push	word 'C'
+	call	putc
+	add	sp, 2
 	
 	jmp	$
 
 ALIGN 2, db 	0x00
 BOOT:	
 .DRIVE:	dw 	0x0000
+
+%include	"./modules/real/putc.S"
 	
 	;; Boot flag
 	times	510 - ($ - $$) db 0x00
