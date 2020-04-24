@@ -19,17 +19,18 @@ ipl:
 
 	mov	[BOOT.DRIVE], dl
 
-	cdecl	putc, word 'A'
-	cdecl	putc, word 'B'
-	cdecl	putc, word 'C'
+	cdecl	puts, .s0
 	
 	jmp	$
+
+.s0	db 	"Booting...", 0x0A, 0x0D, 0x00
 
 ALIGN 2, db 	0x00
 BOOT:	
 .DRIVE:	dw 	0x0000
 
 %include	"./modules/real/putc.S"
+%include	"./modules/real/puts.S"
 	
 	;; Boot flag
 	times	510 - ($ - $$) db 0x00
