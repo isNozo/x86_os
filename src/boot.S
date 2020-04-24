@@ -1,6 +1,7 @@
-	BOOT_LOAD equ 0x7C00	; Start address of boot program
-	ORG	BOOT_LOAD
+%include "./include/macro.S"
 
+	BOOT_LOAD equ 0x7C00	; Start address of boot program
+	ORG	BOOT_LOAD	
 entry:	
 	jmp	ipl
 
@@ -18,15 +19,9 @@ ipl:
 
 	mov	[BOOT.DRIVE], dl
 
-	push	word 'A'
-	call	putc
-	add	sp, 2
-	push	word 'B'
-	call	putc
-	add	sp, 2
-	push	word 'C'
-	call	putc
-	add	sp, 2
+	cdecl	putc, word 'A'
+	cdecl	putc, word 'B'
+	cdecl	putc, word 'C'
 	
 	jmp	$
 
