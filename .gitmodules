@@ -1,0 +1,3 @@
+[submodule "src/gdb_init_real_mode"]
+	path = src/gdb_init_real_mode
+	url = https://github.com/mhugo/gdb_init_real_mode.git
