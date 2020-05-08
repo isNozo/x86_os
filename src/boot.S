@@ -10,27 +10,38 @@ entry:
 
 ipl:
 	cli
+	;; セグメントレジスタの初期化
 	mov	ax, 0x0000
 	mov	ds, ax
 	mov	es, ax
 	mov	ss, ax
+	;; スタックポインタの設定
 	mov	sp, BOOT_LOAD
 	sti
 
+	;; ブートドライブの保存
 	mov	[BOOT.DRIVE], dl
 
-	cdecl	puts, .s0
+	cdecl	itoa, 8086, .s1, 8, 10, 0b0001
+	cdecl	puts, .s1
+	cdecl	itoa, 8086, .s1, 8, 10, 0b0011
+	cdecl	puts, .s1
+	cdecl	itoa, -8086, .s1, 8, 10, 0b0001
+	cdecl	puts, .s1
+	cdecl	itoa, -1, .s1, 8, 16, 0b0100
+	cdecl	puts, .s1
 	
 	jmp	$
 
 .s0	db 	"Booting...", 0x0A, 0x0D, 0x00
+.s1	db	"--------", 0x0A, 0x0D, 0x00
 
 ALIGN 2, db 	0x00
 BOOT:	
 .DRIVE:	dw 	0x0000
 
-%include	"./modules/real/putc.S"
 %include	"./modules/real/puts.S"
+%include	"./modules/real/itoa.S"
 	
 	;; Boot flag
 	times	510 - ($ - $$) db 0x00
