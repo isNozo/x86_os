@@ -22,14 +22,9 @@ ipl:
 	;; ブートドライブの保存
 	mov	[BOOT.DRIVE], dl
 
-	cdecl	itoa, 8086, .s1, 8, 10, 0b0001
-	cdecl	puts, .s1
-	cdecl	itoa, 8086, .s1, 8, 10, 0b0011
-	cdecl	puts, .s1
-	cdecl	itoa, -8086, .s1, 8, 10, 0b0001
-	cdecl	puts, .s1
-	cdecl	itoa, -1, .s1, 8, 16, 0b0100
-	cdecl	puts, .s1
+	cdecl	puts, .s0
+
+	cdecl	reboot
 	
 	jmp	$
 
@@ -42,6 +37,7 @@ BOOT:
 
 %include	"./modules/real/puts.S"
 %include	"./modules/real/itoa.S"
+%include	"./modules/real/reboot.S"
 	
 	;; Boot flag
 	times	510 - ($ - $$) db 0x00
