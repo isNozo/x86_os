@@ -38,6 +38,9 @@ ipl:
 	mov 	cx, BOOT_LOAD + SECT_SIZE 	; CX = 次のロードアドレス;
 	cdecl	read_chs, BOOT, bx, cx  	; AX = read_chs(BOOT, BX, CX);
 
+	cdecl	itoa, ax, .s0, 2, 10, 0b0001
+	cdecl	puts, .s0
+
 	cmp	ax, bx 				; if (AX != 残りのセクタ数)
 .10Q:	jz	.10E				; {
 .10T:	cdecl	puts, .e0			;   puts(.e0);
@@ -49,8 +52,8 @@ ipl:
 	;; ---------------------------------------
 	jmp	stage_2
 
-.s0	db 	"Booting...", 0x0A, 0x0D, 0x00
-.e0	db	"Error : sector read", 0x00
+.s0	db	"-- sector read", 0x0A, 0x0D, 0x00
+.e0	db	"Err:sector read", 0x00
 
 ;; ************************************************************************
 ;;  ブートドライブに関する情報
