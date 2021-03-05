@@ -87,11 +87,15 @@ FONT:
 .seg:	dw 0
 .off:	dw 0
 
+ACPI_DATA:
+.adr:	dd 0			; ACPI data address
+.len:	dd 0			; ACPI data length
 ;; ************************************************************************
 ;;  モジュール（先頭512バイト以降に配置）
 ;; ************************************************************************
 %include	"./modules/real/get_drive_param.S"
 %include	"./modules/real/get_font_adr.S"
+%include	"./modules/real/get_mem_info.S"
 
 ;; ************************************************************************
 ;;  ブート処理の第2ステージ
@@ -146,12 +150,18 @@ stage_3rd:
 	cdecl	itoa, word [FONT.off], .p2, 4, 16, 0b0100
 	cdecl	puts, .s1
 
+	; メモリ情報の取得
+	cdecl	get_mem_info
+	cdecl	puts, .s2
+	
 	jmp	$
 
 .s0	db	"=== 3rd stage ===", 0x0A, 0x0D, 0x00
 .s1	db	"Font Address="
 .p1	db	"----:"
 .p2	db	"----", 0x0A, 0x0D, 0x00
+
+.s2	db	"ACPI Address=", 0x0A, 0x0D, 0x00
 
 ;; ************************************************************************
 ;;  パディング
