@@ -152,8 +152,16 @@ stage_3rd:
 
 	; メモリ情報の取得
 	cdecl	get_mem_info
-	cdecl	puts, .s2
-	
+	mov		eax, [ACPI_DATA.adr]
+
+	cmp		eax, 0							; if (EAX)
+	je		.10E							; {
+	cdecl	itoa, ax, .p4, 4, 16, 0b0100	;   itoa(AX); // 下位アドレスを変換
+	shr		eax, 16							;   EAX >>= 16;
+	cdecl	itoa, ax, .p3, 4, 16, 0b0100	;   itoa(AX); // 上位アドレスを変換
+	cdecl	puts, .s2						;   puts(.s2); // アドレスを表示
+.10E:										; }
+
 	jmp	$
 
 .s0	db	"=== 3rd stage ===", 0x0A, 0x0D, 0x00
@@ -161,7 +169,9 @@ stage_3rd:
 .p1	db	"----:"
 .p2	db	"----", 0x0A, 0x0D, 0x00
 
-.s2	db	"ACPI Address=", 0x0A, 0x0D, 0x00
+.s2	db	"ACPI Address="
+.p3	db	"----"
+.p4 db	"----", 0x0A, 0x0D, 0
 
 ;; ************************************************************************
 ;;  パディング

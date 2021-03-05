@@ -31,7 +31,23 @@ get_mem_info:
 		jnc		.14E							;   {
 		jmp		.10E							;     break; // エラー発生
 .14E:											;   }
-.10E:											; } while (0 != EBX);
+		; 1レコード分のメモリ情報を表示
+		cdecl	puts, .s1						; // フッダを表示
+
+		; ACPI dataのアドレスを取得
+		mov		eax, [di + 16]					;   EAX = レコードタイプ;
+		cmp		eax, 3							;   if (3 == EAX) // ACPI data
+		jne		.15E							;   {
+												;     
+		mov		eax, [di +  0]					;     EAX   = BASEアドレス;
+		mov		[ACPI_DATA.adr], eax			;     ACPI_DATA.adr = EAX;
+												;     
+		mov		eax, [di +  8]					;     EAX   = Length;
+		mov		[ACPI_DATA.len], eax			;     ACPI_DATA.len = EAX;
+.15E:											;   }
+		cmp		ebx, 0							;   
+		jne		.10L							; }
+.10E:											; while (0 != EBX);
 
 		cdecl	puts, .s1						; // フッダを表示
 	
