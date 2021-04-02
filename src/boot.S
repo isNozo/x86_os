@@ -2,34 +2,31 @@
 %include "./include/macro.S"
 
         ORG     BOOT_LOAD
-
 entry:
-	    jmp     ipl
-
-	    ;; BIOS Parameter Block (nop埋め)
-	    times   90 - ($ - $$) db 0x90
-
+        ;; BIOS Parameter Block (nop埋め)
+        jmp     ipl
+        times   90 - ($ - $$) db 0x90
 ipl:
-	    cli
-	    ;; セグメントレジスタの初期化
-	    mov     ax, 0x0000
-	    mov     ds, ax
-	    mov     es, ax
-	    mov     ss, ax
-	    ;; スタックポインタの設定
-	    mov     sp, BOOT_LOAD
-	    sti
-	    
-	    ;; ブートドライブを保存
-	    mov     [BOOT + drive.no], dl
+        cli
+        ;; セグメントレジスタの初期化
+        mov     ax, 0x0000
+        mov     ds, ax
+        mov     es, ax
+        mov     ss, ax
+        ;; スタックポインタの設定
+        mov     sp, BOOT_LOAD
+        sti
+
+        ;; ブートドライブを保存
+        mov     [BOOT + drive.no], dl
 
         ;; ブートメッセージ表示
         cdecl   puts, .s0
-        
-	    ;; 残りのセクタをすべて読み込む
-	    mov     bx, BOOT_SECT - 1
-	    mov     cx, BOOT_LOAD + SECT_SIZE
-	    cdecl   read_chs, BOOT, bx, cx
+
+        ;; 残りのセクタをすべて読み込む
+        mov     bx, BOOT_SECT - 1
+        mov     cx, BOOT_LOAD + SECT_SIZE
+        cdecl   read_chs, BOOT, bx, cx
         ;; セクタの読み込みに失敗したら再起動
         cmp     ax, bx
 .10Q:   jz      .10E
@@ -40,20 +37,20 @@ ipl:
         jmp     stage_2
 
 .s0     db      "Booting...", 0x0A, 0x0D, 0x00
-.e0     db      "Err:sector red", 0x00
+.e0     db      "Err:sector read", 0x00
 
-ALIGN   2, db 0x00
-
+;; 2バイト境界に配置
+ALIGN 2, db 0x00
+;; ブートドライブに関する情報
 BOOT:
-        ;; ブートドライブに関する情報
-        istruc drive
-	        at drive.no,   dw 0 ; ドライブ番号
-	        at drive.cyln, dw 0 ; C:シリンダ
-	        at drive.head, dw 0 ; H:ヘッド
-	        at drive.sect, dw 2 ; S:セクタ
-        iend
+istruc drive
+    at drive.no,   dw 0 ; ドライブ番号
+    at drive.cyln, dw 0 ; C:シリンダ
+    at drive.head, dw 0 ; H:ヘッド
+    at drive.sect, dw 2 ; S:セクタ
+iend
 
-;; 512バイトまでのモジュール
+;; ブートセクタで使うモジュール
 %include "./modules/real/puts.S"
 %include "./modules/real/reboot.S"
 %include "./modules/real/read_chs.S"
@@ -62,15 +59,16 @@ BOOT:
         times   510 - ($ - $$) db 0x00
         db      0x55, 0xAA
 
-        ;; リアルモード時に取得した情報
+;; リアルモード時に取得した情報
 FONT:
-.seg:   dw 0
-.off:   dw 0
+.seg:   dw      0
+.off:   dw      0
 ACPI_DATA:
-.adr:   dd 0 ; ACPI data address
-.len:   dd 0 ; ACPI data length
+.adr:   dd      0 ; ACPI data address
+.len:   dd      0 ; ACPI data length
 
 ;; 512バイト以降のモジュール
+%include "./modules/real/itoa.S"
 %include "./modules/real/get_drive_param.S"
 %include "./modules/real/get_font_adr.S"
 %include "./modules/real/get_mem_info.S"
@@ -115,25 +113,23 @@ stage_2:
 stage_3rd:
         cdecl   puts, .s0
 
-	    ; BIOSのFONTデータのアドレスを保存する
-	    cdecl   get_font_adr, FONT
+        ;; BIOSのFONTデータのアドレスを保存する
+        cdecl   get_font_adr, FONT
+        cdecl   itoa, word [FONT.seg], .p1, 4, 16, 0b0100
+        cdecl   itoa, word [FONT.off], .p2, 4, 16, 0b0100
+        cdecl   puts, .s1
 
-	    cdecl   itoa, word [FONT.seg], .p1, 4, 16, 0b0100
-	    cdecl   itoa, word [FONT.off], .p2, 4, 16, 0b0100
-	    cdecl   puts, .s1
-
-	    ; メモリ情報の取得
-	    cdecl   get_mem_info
-	    mov     eax, [ACPI_DATA.adr]
+        ;; メモリ情報の取得
+        cdecl   get_mem_info
+        mov     eax, [ACPI_DATA.adr]
 
         cmp     eax, 0
-	    je      .10E
-	    cdecl   itoa, ax, .p4, 4, 16, 0b0100
-	    shr     eax, 16
-	    cdecl   itoa, ax, .p3, 4, 16, 0b0100
-	    cdecl   puts, .s2
+        je      .10E
+        cdecl   itoa, ax, .p4, 4, 16, 0b0100
+        shr     eax, 16
+        cdecl   itoa, ax, .p3, 4, 16, 0b0100
+        cdecl   puts, .s2
 .10E:
-
         jmp    $
 
 .s0     db      "=== 3rd stage ===", 0x0A, 0x0D, 0x00
