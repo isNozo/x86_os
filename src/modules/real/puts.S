@@ -1,28 +1,37 @@
+;; BIOSコール 0x10 Video Services
+;;   AH = Function
+;;   AL = Charactor
+;;   BH = Page Number
+;;   BL = Color
+;; 引数
+;;   [bp+4] 文字列アドレス
 puts:
-	push	bp
-	mov	bp, sp
+        ;; スタックフレーム構築
+        push    bp
+        mov     bp, sp
 
-	;; save regs
-	push	ax
-	push	bx
-	push	si
+        ;; レジスタ退避
+        push    ax
+        push    bx
+        push    si
 
-	mov	si, [bp + 4]	; SI = &str
-	mov	ah, 0x0E
-	mov	bx, 0x0000
-	cld
+        mov     si, [bp + 4]
+        mov     ah, 0x0E
+        mov     bx, 0x0000
+        cld
 .10L:
-	lodsb			; AL = *SI++
-	cmp	al, 0
-	je	.10E
-	int	0x10
-	jmp	.10L
+        lodsb                   ; AL = *SI++
+        cmp     al, 0
+        je      .10E
+        int     0x10
+        jmp     .10L
 .10E:
-	;; restore regs
-	pop	si
-	pop	bx
-	pop	ax
+        ;; レジスタ復帰
+        pop     si
+        pop     bx
+        pop     ax
 
-	mov	sp, bp
-	pop	bp
-	ret
+        ;; スタックフレーム破棄
+        mov     sp, bp
+        pop     bp
+        ret

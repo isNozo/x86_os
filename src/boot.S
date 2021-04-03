@@ -2,11 +2,13 @@
 %include "./include/macro.S"
 
         ORG     BOOT_LOAD
+
 entry:
-        ;; BIOS Parameter Block (nop埋め)
         jmp     ipl
+        ;; BIOS Parameter Block
         times   90 - ($ - $$) db 0x90
-ipl:
+
+ipl:    ;; Initial Program Loader
         cli
         ;; セグメントレジスタの初期化
         mov     ax, 0x0000
@@ -59,6 +61,8 @@ iend
         times   510 - ($ - $$) db 0x00
         db      0x55, 0xAA
 
+
+
 ;; リアルモード時に取得した情報
 FONT:
 .seg:   dw      0
@@ -72,8 +76,6 @@ ACPI_DATA:
 %include "./modules/real/get_drive_param.S"
 %include "./modules/real/get_font_adr.S"
 %include "./modules/real/get_mem_info.S"
-
-
 
 stage_2:
         cdecl   puts, .s0
@@ -130,7 +132,7 @@ stage_3rd:
         cdecl   itoa, ax, .p3, 4, 16, 0b0100
         cdecl   puts, .s2
 .10E:
-        jmp    $
+        jmp     $
 
 .s0     db      "=== 3rd stage ===", 0x0A, 0x0D, 0x00
 .s1     db      "Font Address="
