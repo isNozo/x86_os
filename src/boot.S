@@ -38,8 +38,8 @@ ipl:    ;; Initial Program Loader
         ;; 次のステージへ移行
         jmp     stage_2
 
-.s0     db      "Booting...", 0x0A, 0x0D, 0x00
-.e0     db      "Err:sector read", 0x00
+.s0:    db      "Booting...", 0x0A, 0x0D, 0x00
+.e0:    db      "Err:sector read", 0x00
 
 ;; 2バイト境界に配置
 ALIGN 2, db 0x00
@@ -102,13 +102,13 @@ stage_2:
         ;; 次のステージへ移行
         jmp     stage_3rd
 
-.s0     db      "=== 2nd stage ===", 0x0A, 0x0D, 0x00
-.s1     db      "Drive:0x"
-.p1     db      "--, C:0x"
-.p2     db      "----, H:0x"
-.p3     db      "--, S:0x"
-.p4     db      "--", 0x0A, 0x0D, 0x00
-.e0     db      "Can't get drive parameter.", 0x00
+.s0:    db      "=== 2nd stage ===", 0x0A, 0x0D, 0x00
+.s1:    db      "Drive:0x"
+.p1:    db      "--, C:0x"
+.p2:    db      "----, H:0x"
+.p3:    db      "--, S:0x"
+.p4:    db      "--", 0x0A, 0x0D, 0x00
+.e0:    db      "Can't get drive parameter.", 0x00
 
 
 
@@ -124,23 +124,16 @@ stage_3rd:
         ;; メモリ情報の取得
         cdecl   get_mem_info
         mov     eax, [ACPI_DATA.adr]
-
-        cmp     eax, 0
-        je      .10E
-        cdecl   itoa, ax, .p4, 4, 16, 0b0100
-        shr     eax, 16
-        cdecl   itoa, ax, .p3, 4, 16, 0b0100
-        cdecl   puts, .s2
-.10E:
+        
         jmp     $
 
-.s0     db      "=== 3rd stage ===", 0x0A, 0x0D, 0x00
-.s1     db      "Font Address="
-.p1     db      "----:"
-.p2     db      "----", 0x0A, 0x0D, 0x00
-.s2     db      "ACPI Address="
-.p3     db      "----"
-.p4     db      "----", 0x0A, 0x0D, 0
+.s0:    db      "=== 3rd stage ===", 0x0A, 0x0D, 0x00
+.s1:    db      "Font Address="
+.p1:    db      "----:"
+.p2:    db      "----", 0x0A, 0x0D, 0x00
+.s2:    db      "ACPI Address="
+.p3:    db      "----"
+.p4:    db      "----", 0x0A, 0x0D, 0
 
         ;; パディング
         times   BOOT_SIZE - ($ - $$) db 0x00

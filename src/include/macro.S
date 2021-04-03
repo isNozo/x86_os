@@ -12,8 +12,8 @@
 %endmacro
 
 struc drive
-    	.no      resw 1 ; ドライブ番号
-    	.cyln    resw 1 ; シリンダ
-    	.head    resw 1 ; ヘッド
-    	.sect    resw 1 ; セクタ
+        .no      resw 1 ; ドライブ番号
+        .cyln    resw 1 ; シリンダ
+        .head    resw 1 ; ヘッド
+        .sect    resw 1 ; セクタ
 endstruc
