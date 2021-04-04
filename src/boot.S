@@ -123,7 +123,13 @@ stage_3rd:
 
         ;; メモリ情報の取得
         cdecl   get_mem_info
+
+        ;; ACPIアドレス表示
         mov     eax, [ACPI_DATA.adr]
+        cdecl   itoa, ax, .p4, 4, 16, 0b0100
+        shr     eax, 16
+        cdecl   itoa, ax, .p3, 4, 16, 0b0100
+        cdecl   puts, .s2
         
         jmp     $
 
