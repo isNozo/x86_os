@@ -76,6 +76,7 @@ ACPI_DATA:
 %include "./modules/real/get_drive_param.S"
 %include "./modules/real/get_font_adr.S"
 %include "./modules/real/get_mem_info.S"
+%include "./modules/real/kbc.S"
 
 stage_2:
         cdecl   puts, .s0
@@ -103,7 +104,7 @@ stage_2:
         jmp     stage_3rd
 
 .s0:    db      "=== 2nd stage ===", 0x0A, 0x0D, 0x00
-.s1:    db      "Drive:0x"
+.s1:    db      " Drive:0x"
 .p1:    db      "--, C:0x"
 .p2:    db      "----, H:0x"
 .p3:    db      "--, S:0x"
@@ -131,15 +132,41 @@ stage_3rd:
         cdecl   itoa, ax, .p3, 4, 16, 0b0100
         cdecl   puts, .s2
         
-        jmp     $
+        jmp     stage_4
 
 .s0:    db      "=== 3rd stage ===", 0x0A, 0x0D, 0x00
-.s1:    db      "Font Address="
+.s1:    db      " Font Address="
 .p1:    db      "----:"
 .p2:    db      "----", 0x0A, 0x0D, 0x00
-.s2:    db      "ACPI Address="
+.s2:    db      " ACPI Address="
 .p3:    db      "----"
 .p4:    db      "----", 0x0A, 0x0D, 0
+
+
+
+stage_4:
+        cdecl   puts, .s0
+
+        cli
+        cdecl   KBC_Cmd_Write, 0xAD     ; キーボード無効化
+        cdecl   KBC_Cmd_Write, 0xD0     ; 出力ポート読み出し
+        cdecl   KBC_Data_Read, .key
+        mov     bl, [.key]
+        or      bl, 0x02                ; A20ゲート有効化
+        cdecl   KBC_Cmd_Write, 0xD1     ; 出力ポート書き込み
+        cdecl   KBC_Data_Write, bx
+        cdecl   KBC_Cmd_Write, 0xAE     ; キーボード有効化
+        sti
+
+        cdecl   itoa, bx, .p0, 4, 16, 0b0100
+        cdecl   puts, .s1
+
+        jmp     $
+
+.s0:    db      "=== 4th stage ===", 0x0A, 0x0D, 0x00
+.s1     db      " A20 Gate Enabled:"
+.p0:    db      "----", 0x0A, 0x0D, 0x00
+.key:   dw      0
 
         ;; パディング
         times   BOOT_SIZE - ($ - $$) db 0x00
