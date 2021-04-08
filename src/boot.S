@@ -161,12 +161,21 @@ stage_4:
         cdecl   itoa, bx, .p0, 4, 16, 0b0100
         cdecl   puts, .s1
 
-        jmp     $
+        jmp     stage_5
 
 .s0:    db      "=== 4th stage ===", 0x0A, 0x0D, 0x00
-.s1     db      " A20 Gate Enabled:"
+.s1:    db      " A20 Gate Enabled:"
 .p0:    db      "----", 0x0A, 0x0D, 0x00
 .key:   dw      0
+
+
+
+stage_5:
+        cdecl   puts, .s0
+
+        jmp     $
+
+.s0:    db      "=== 5th stage ===", 0x0A, 0x0D, 0x00
 
         ;; パディング
         times   BOOT_SIZE - ($ - $$) db 0x00

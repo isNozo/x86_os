@@ -1,8 +1,10 @@
 all:
-	nasm boot.S -o boot.img -l boot.lst
+	nasm boot.S -o boot.bin -l boot.lst
+	nasm kernel.S -o kernel.bin -l kernel.lst
+	cat boot.bin kernel.bin > boot.img
 
 clean:
-	rm -f boot.img boot.lst
+	rm -f *.bin *.img *.lst
 
 dis:
 	objdump -D -b binary -m i8086 boot.img
