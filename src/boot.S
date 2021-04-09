@@ -77,6 +77,7 @@ ACPI_DATA:
 %include "./modules/real/get_font_adr.S"
 %include "./modules/real/get_mem_info.S"
 %include "./modules/real/kbc.S"
+%include "./modules/real/read_lba.S"
 
 stage_2:
         cdecl   puts, .s0
@@ -173,9 +174,18 @@ stage_4:
 stage_5:
         cdecl   puts, .s0
 
+        ;; カーネルの読み込み
+        cdecl   read_lba, BOOT, BOOT_SECT, KERNEL_SECT, BOOT_END
+        cmp     ax, KERNEL_SECT
+.10Q:   jz      .10E
+.10T:   cdecl   puts, .e0
+        call    reboot
+.10E:
+
         jmp     $
 
 .s0:    db      "=== 5th stage ===", 0x0A, 0x0D, 0x00
+.e0:    db      " Failure load kernel...", 0x0A, 0x0D, 0x00
 
         ;; パディング
         times   BOOT_SIZE - ($ - $$) db 0x00

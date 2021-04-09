@@ -3,8 +3,6 @@
 
         ORG     KERNEL_LOAD
 
-[BITS 32]
-
 kernel:
         jmp     $
 
