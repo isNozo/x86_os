@@ -254,8 +254,31 @@ stage_7:
         lgdt    [GDTR]
         lidt    [IDTR]
 
-        jmp     $
-        
+        ;; PEビットをセット
+        mov     eax, cr0
+        or      ax, 1
+        mov     cr0, eax
 
+        ;; 先読みをクリア
+        jmp     $ + 2
+
+        ;; セグメント間ジャンプ
+[BITS 32]
+        DB      0x66
+        jmp     SEL_CODE:CODE_32 ; CSにセレクタをセット
+
+
+
+CODE_32:
+        mov     ax, SEL_DATA
+        mov     ds, ax           ; DSにセレクタをセット
+        mov     es, ax
+        mov     fs, ax
+        mov     gs, ax
+        mov     ss, ax
+        
+        jmp     $
+
+        
         ;; パディング
         times   BOOT_SIZE - ($ - $$) db 0x00
