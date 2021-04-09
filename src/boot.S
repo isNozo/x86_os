@@ -202,10 +202,57 @@ stage_6:
         mov     ax, 0x0012
         int     0x10
         
-        jmp     $
+        jmp     stage_7
 
 .s0:    db      "=== 6th stage ===", 0x0A, 0x0D
         db      " [Push SPACE key to protect mode...]", 0x0A, 0x0D, 0
+
+
+
+ALIGN 4, db 0
+;; Global Descriptor Table
+GDT:    dq      0x0000000000000000
+;; CODE 4G
+;;  BASE=0x0000_0000
+;; LIMIT=0xF_FFFF
+;;     G=1
+;;     D=1
+;;   AVL=0
+;;     P=1
+;;   DPL=0
+;;    DT=1
+;;  Type=0xA (実行/リード)
+.cs:    dq      0x00CF9A000000FFFF
+;; DATA 4G
+;;  BASE=0x0000_0000
+;; LIMIT=0xF_FFFF
+;;     G=1
+;;     D=1
+;;   AVL=0
+;;     P=1
+;;   DPL=0
+;;    DT=1
+;;  Type=0x2 (データRW)
+.ds:    dq      0x00CF92000000FFFF
+.gdt_end:
+
+;; GDTセレクタ
+SEL_CODE equ .cs - GDT               ; CSセレクタ
+SEL_DATA equ .ds - GDT               ; DSセレクタ
+
+;; GDTRへロードするデータ
+GDTR:   dw      GDT.gdt_end - GDT -1 ; テーブルサイズ
+        dd      GDT                  ; ベースアドレス
+
+
+
+stage_7:
+        cli
+
+        lgdt    [GDTR]
+
+        jmp     $
+        
 
         ;; パディング
         times   BOOT_SIZE - ($ - $$) db 0x00
