@@ -244,12 +244,15 @@ SEL_DATA equ .ds - GDT               ; DSセレクタ
 GDTR:   dw      GDT.gdt_end - GDT -1 ; テーブルサイズ
         dd      GDT                  ; ベースアドレス
 
-
+;; IDTRへロードするデータ(空)
+IDTR:   dw      0
+        dd      0
 
 stage_7:
         cli
 
         lgdt    [GDTR]
+        lidt    [IDTR]
 
         jmp     $
         
