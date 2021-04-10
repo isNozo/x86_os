@@ -27,4 +27,5 @@ debug:
 		-ex 'layout src' \
 		-ex 'layout regs' \
 		-ex 'break *0x7c00' \
-		-ex 'continue'
+		-ex 'continue' \
+		-ex 'add-symbol-file kernel.elf'

@@ -192,11 +192,11 @@ stage_5:
 stage_6:
         cdecl   puts, .s0
 
-        ;; ユーザ入力待ち
-.10L:   mov     ah, 0x00
-        int     0x16
-        cmp     al, ' '
-        jne     .10L
+;        ;; ユーザ入力待ち
+;.10L:   mov     ah, 0x00
+;        int     0x16
+;        cmp     al, ' '
+;        jne     .10L
         
         ;; ビデオモード設定
         mov     ax, 0x0012
@@ -277,7 +277,15 @@ CODE_32:
         mov     gs, ax
         mov     ss, ax
         
-        jmp     $
+        ;; カーネルを上位メモリにコピーする
+        mov     ecx, (KERNEL_SIZE) / 4
+        mov     esi, BOOT_END
+        mov     edi, KERNEL_LOAD
+        cld
+        rep movsd
+
+        ;; カーネルの先頭にジャンプ
+        jmp     KERNEL_LOAD
 
         
         ;; パディング
