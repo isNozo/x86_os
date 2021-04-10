@@ -21,11 +21,10 @@ run:
 
 debug:
 	qemu-system-i386 -s -S boot.img & \
-	gdb boot.elf \
+	gdb kernel.elf \
 		-ex 'target remote localhost:1234' \
-		-ex 'set architecture i8086' \
+		-ex 'set pagination off' \
 		-ex 'layout src' \
 		-ex 'layout regs' \
-		-ex 'break *0x7c00' \
-		-ex 'continue' \
-		-ex 'add-symbol-file kernel.elf'
+		-ex 'break kernel' \
+		-ex 'continue'
