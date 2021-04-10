@@ -1,7 +1,7 @@
 %include "./include/define.S"
 %include "./include/macro.S"
 
-        ORG     BOOT_LOAD
+[BITS 16]
 
 entry:
         jmp     ipl

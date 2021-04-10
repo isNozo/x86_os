@@ -1,7 +1,7 @@
 %include "./include/define.S"
 %include "./include/macro.S"
 
-        ORG     KERNEL_LOAD
+[BITS 32]
 
 kernel:
         jmp     $

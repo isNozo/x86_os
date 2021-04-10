@@ -1,10 +1,17 @@
 all:
-	nasm boot.S -o boot.bin -l boot.lst
-	nasm kernel.S -o kernel.bin -l kernel.lst
+	# build boot
+	nasm -f elf32 -g3 -F dwarf boot.S -o boot.o
+	ld -Ttext=0x7c00 -melf_i386 boot.o -o boot.elf
+	objcopy -O binary boot.elf boot.bin
+	# build kernel
+	nasm -f elf32 -g3 -F dwarf kernel.S -o kernel.o
+	ld -Ttext=0x00101000 -melf_i386 kernel.o -o kernel.elf
+	objcopy -O binary kernel.elf kernel.bin
+	# concat boot and kernel
 	cat boot.bin kernel.bin > boot.img
 
 clean:
-	rm -f *.bin *.img *.lst
+	rm -f *.o *.elf *.bin *.img
 
 dis:
 	objdump -D -b binary -m i8086 boot.img
@@ -14,4 +21,10 @@ run:
 
 debug:
 	qemu-system-i386 -s -S boot.img & \
-	gdb -ix gdb_init_real_mode/gdbinit_real_mode.txt --eval-command="target remote localhost:1234"
+	gdb boot.elf \
+		-ex 'target remote localhost:1234' \
+		-ex 'set architecture i8086' \
+		-ex 'layout src' \
+		-ex 'layout regs' \
+		-ex 'break *0x7c00' \
+		-ex 'continue'
