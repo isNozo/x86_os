@@ -12,13 +12,8 @@ kernel:
         add     eax, ebx
         mov     [FONT_ADR], eax
 
-        cdecl   draw_char, 0, 1, 0x010F, 'A'
-        cdecl   draw_char, 1, 1, 0x010F, 'B'
-        cdecl   draw_char, 2, 1, 0x010F, 'C'
-
-        cdecl   draw_char, 0, 1, 0x0402, '0'
-        cdecl   draw_char, 1, 1, 0x0012, '1'
-        cdecl   draw_char, 2, 1, 0x0012, '_'
+        ;; フォント一覧の表示
+        cdecl   draw_font, 63, 13
 
         jmp     $
 
@@ -27,5 +22,6 @@ FONT_ADR: dd 0
 
 %include "./modules/protect/vga.S"
 %include "./modules/protect/draw_char.S"
+%include "./modules/protect/draw_font.S"
 
         times KERNEL_SIZE - ($ - $$) db 0
