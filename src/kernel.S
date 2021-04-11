@@ -12,26 +12,20 @@ kernel:
         add     eax, ebx
         mov     [FONT_ADR], eax
 
-        ;; VRAM書き込み設定
-        mov     ah, 0x02
-        mov     al, 0x02
-        mov     dx, 0x03C4
-        out     dx, ax
+        cdecl   draw_char, 0, 1, 0x010F, 'A'
+        cdecl   draw_char, 1, 1, 0x010F, 'B'
+        cdecl   draw_char, 2, 1, 0x010F, 'C'
 
-        ;; フォントデータ書き込み
-        mov     esi, 'B'
-        shl     esi, 4
-        add     esi, [FONT_ADR]
-        lea     edi, [0x000A_0000]
-
-        mov     ecx, 16
-.10L:   movsb
-        add     edi, 80-1
-        loop    .10L
+        cdecl   draw_char, 0, 1, 0x0402, '0'
+        cdecl   draw_char, 1, 1, 0x0012, '1'
+        cdecl   draw_char, 2, 1, 0x0012, '_'
 
         jmp     $
 
 ALIGN 4, db 0
 FONT_ADR: dd 0
+
+%include "./modules/protect/vga.S"
+%include "./modules/protect/draw_char.S"
 
         times KERNEL_SIZE - ($ - $$) db 0
