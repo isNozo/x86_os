@@ -15,6 +15,25 @@ kernel:
         ;; フォント一覧の表示
         cdecl   draw_font, 63, 13
 
+        ;; ピクセル描画
+        cdecl   draw_pixel,  8,  4, 0x01
+        cdecl   draw_pixel,  8, 4, 0x01
+        cdecl   draw_pixel,  9, 5, 0x01
+        cdecl   draw_pixel, 10, 6, 0x02
+        cdecl   draw_pixel, 11, 7, 0x02
+        cdecl   draw_pixel, 12, 8, 0x03
+        cdecl   draw_pixel, 13, 9, 0x03
+        cdecl   draw_pixel, 14,10, 0x04
+        cdecl   draw_pixel, 15,11, 0x04
+        cdecl   draw_pixel, 15, 4, 0x03
+        cdecl   draw_pixel, 14, 5, 0x03
+        cdecl   draw_pixel, 13, 6, 0x04
+        cdecl   draw_pixel, 12, 7, 0x04
+        cdecl   draw_pixel, 11, 8, 0x01
+        cdecl   draw_pixel, 10, 9, 0x01
+        cdecl   draw_pixel,  9,10, 0x02
+        cdecl   draw_pixel,  8,11, 0x02
+
         jmp     $
 
 ALIGN 4, db 0
@@ -23,5 +42,6 @@ FONT_ADR: dd 0
 %include "./modules/protect/vga.S"
 %include "./modules/protect/draw_char.S"
 %include "./modules/protect/draw_font.S"
+%include "./modules/protect/draw_pixel.S"
 
         times KERNEL_SIZE - ($ - $$) db 0

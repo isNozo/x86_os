@@ -16,10 +16,10 @@ clean:
 dis:
 	objdump -D -b binary -m i8086 boot.img
 
-run:
+run: all
 	qemu-system-i386 boot.img
 
-debug:
+debug: all
 	qemu-system-i386 -s -S boot.img & \
 	gdb kernel.elf \
 		-ex 'target remote localhost:1234' \

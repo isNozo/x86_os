@@ -127,3 +127,50 @@ vram_font_copy:
         mov     esp, ebp
         pop     ebp
         ret
+
+;; 引数
+;;   [ebp+8]  出力ビットパターン
+;;   [ebp+12] VRAMアドレス
+;;   [ebp+16] 出力プレーン(1byte)
+;;   [ebp+20] 前景色(1byte) ----IRGB
+vram_bit_copy:
+        ;; スタックフレーム構築
+        push    ebp
+        mov     ebp, esp
+
+        ;;　レジスタ退避
+        push    eax
+        push    ebx
+        push    edi
+
+        ;; 引数読み込み
+        mov     edi, [ebp + 12]
+        movzx   eax, byte [ebp + 16]
+        movzx   ebx, byte [ebp + 20]
+
+        ;; 前景色マスク
+        test    bl, al      ; ZF = 前景色 & プレーン
+        setz    bl          ; BL = ZF ? 0x01 : 0x00
+        dec     bl          ; 0x00 or 0xFF
+
+        ;; マスク作成
+        mov     al, [ebp + 8]
+        mov     ah, al
+        not     ah          ; AH = not AL
+
+        and     ah, [edi]   ; AH = 現在値 & !出力ビットパターン
+        and     al, bl      ; AL = 表示色 &  出力ビットパターン
+        or      al, ah
+        
+        ;; VRAMに書き込み
+        mov     [edi], al
+
+        ;;　レジスタ復帰
+        pop     edi
+        pop     ebx
+        pop     eax
+
+        ;; スタックフレーム破棄
+        mov     esp, ebp
+        pop     ebp
+        ret
