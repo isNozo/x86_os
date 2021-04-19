@@ -15,8 +15,10 @@ kernel:
         ;; フォント一覧の表示
         cdecl   draw_font, 63, 13
 
+        ;; 文字列描画
+        cdecl   draw_str, 25, 14, 0x010F, .s0
+
         ;; ピクセル描画
-        cdecl   draw_pixel,  8,  4, 0x01
         cdecl   draw_pixel,  8, 4, 0x01
         cdecl   draw_pixel,  9, 5, 0x01
         cdecl   draw_pixel, 10, 6, 0x02
@@ -36,11 +38,14 @@ kernel:
 
         jmp     $
 
+.s0     db      " Hello, kernel! ", 0
+
 ALIGN 4, db 0
 FONT_ADR: dd 0
 
 %include "./modules/protect/vga.S"
 %include "./modules/protect/draw_char.S"
+%include "./modules/protect/draw_str.S"
 %include "./modules/protect/draw_font.S"
 %include "./modules/protect/draw_pixel.S"
 
