@@ -36,6 +36,11 @@ kernel:
         cdecl   draw_line, 100, 100, 100, 200, 0x0F
         cdecl   draw_line, 100, 100, 0, 100, 0x0F
 
+        ;; 矩形描画
+        cdecl   draw_rect, 100, 100, 200, 200, 0x03
+        cdecl   draw_rect, 400, 250, 150, 150, 0x05
+        cdecl   draw_rect, 350, 400, 300, 100, 0x06
+
         jmp     $
 
 .s0     db      " Hello, kernel! ", 0
@@ -49,5 +54,6 @@ FONT_ADR: dd 0
 %include "./modules/protect/draw_font.S"
 %include "./modules/protect/draw_pixel.S"
 %include "./modules/protect/draw_line.S"
+%include "./modules/protect/draw_rect.S"
 
         times KERNEL_SIZE - ($ - $$) db 0
