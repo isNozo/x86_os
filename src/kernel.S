@@ -41,12 +41,17 @@ kernel:
         cdecl   draw_rect, 400, 250, 150, 150, 0x05
         cdecl   draw_rect, 350, 400, 300, 100, 0x06
 
-        jmp     $
+        ;; 時刻の表示
+.10L:
+        cdecl   rtc_get_time, RTC_TIME
+        cdecl   draw_time, 72, 0, 0x0700, dword [RTC_TIME]
+        jmp     .10L
 
 .s0     db      " Hello, kernel! ", 0
 
 ALIGN 4, db 0
 FONT_ADR: dd 0
+RTC_TIME: dd 0
 
 %include "./modules/protect/vga.S"
 %include "./modules/protect/draw_char.S"
@@ -55,5 +60,8 @@ FONT_ADR: dd 0
 %include "./modules/protect/draw_pixel.S"
 %include "./modules/protect/draw_line.S"
 %include "./modules/protect/draw_rect.S"
+%include "./modules/protect/itoa.S"
+%include "./modules/protect/rtc.S"
+%include "./modules/protect/draw_time.S"
 
         times KERNEL_SIZE - ($ - $$) db 0
