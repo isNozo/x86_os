@@ -42,10 +42,12 @@ kernel:
         cdecl   draw_rect, 350, 400, 300, 100, 0x06
 
         ;; 時刻の表示
-.10L:
         cdecl   rtc_get_time, RTC_TIME
         cdecl   draw_time, 72, 0, 0x0700, dword [RTC_TIME]
-        jmp     .10L
+
+        push    0x11223344
+        pushf
+        call    0x0008:int_default
 
 .s0     db      " Hello, kernel! ", 0
 
@@ -63,5 +65,6 @@ RTC_TIME: dd 0
 %include "./modules/protect/itoa.S"
 %include "./modules/protect/rtc.S"
 %include "./modules/protect/draw_time.S"
+%include "./modules/protect/interrupt.S"
 
         times KERNEL_SIZE - ($ - $$) db 0
