@@ -12,6 +12,9 @@ kernel:
         add     eax, ebx
         mov     [FONT_ADR], eax
 
+        ;; 割り込みベクタの初期化
+        cdecl   init_int
+
         ;; フォント一覧の表示
         cdecl   draw_font, 63, 13
 
@@ -41,13 +44,17 @@ kernel:
         cdecl   draw_rect, 400, 250, 150, 150, 0x05
         cdecl   draw_rect, 350, 400, 300, 100, 0x06
 
+        ;; 0除算
+        mov     al, 0
+        div     al
+
         ;; 時刻の表示
+.10L:
         cdecl   rtc_get_time, RTC_TIME
         cdecl   draw_time, 72, 0, 0x0700, dword [RTC_TIME]
+        jmp     .10L
 
-        push    0x11223344
-        pushf
-        call    0x0008:int_default
+        jmp     $
 
 .s0     db      " Hello, kernel! ", 0
 
